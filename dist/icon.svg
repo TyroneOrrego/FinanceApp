@@ -1,0 +1,25 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Zen Dark Forest Green Background -->
+  <rect width="180" height="180" rx="40" fill="#324B3C" />
+  
+  <!-- Subtle Mindful Border -->
+  <rect x="8" y="8" width="164" height="164" rx="32" stroke="#4B6A56" stroke-width="2" fill="none" />
+  
+  <!-- Subtle Inner Parchment Circle -->
+  <circle cx="90" cy="90" r="54" fill="#3D5B49" />
+  
+  <!-- Japanese Kanji for Kakeibo: 家 (Household/Home Ledger) -->
+  <g transform="translate(90, 94)">
+    <text
+      text-anchor="middle"
+      dominant-baseline="central"
+      font-family="'Playfair Display', Georgia, 'Hiragino Mincho Pro', 'Yu Mincho', serif"
+      font-size="64"
+      font-weight="600"
+      fill="#F7F6F2"
+    >家</text>
+  </g>
+  
+  <!-- Mindful Ochre Leaf Blossom Accent -->
+  <circle cx="128" cy="52" r="7" fill="#C5A95E" />
+</svg>
