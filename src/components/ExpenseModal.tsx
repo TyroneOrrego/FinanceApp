@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react'
 import { Check, Heart, Sparkles, X } from 'lucide-react'
 import { CurrencyCode, Expense, ExpenseKind, Language, Pillar } from '../types'
@@ -50,14 +51,18 @@ export function ExpenseModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const numericAmount = parseFloat(amount)
+    // Strip any non-numeric characters except dots/commas for safety
+    const cleaned = amount.replace(/[^0-9.]/g, '')
+    const numericAmount = parseFloat(cleaned)
     if (isNaN(numericAmount) || numericAmount <= 0 || !description.trim()) {
       return
     }
+    // For COP: round to nearest integer (no decimals)
+    const finalAmount = currency === 'COP' ? Math.round(numericAmount) : numericAmount
 
     onSave(
       {
-        amount: numericAmount,
+        amount: finalAmount,
         description: description.trim(),
         date,
         pillar,
@@ -91,7 +96,7 @@ export function ExpenseModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form onSubmit={handleSubmit} className="modal-form" noValidate>
           {/* Pillar Selector */}
           <div>
             <label className="form-label">
@@ -137,14 +142,23 @@ export function ExpenseModal({
               <div className="input-prefix">
                 <span className="currency-symbol">{currencySymbol}</span>
                 <input
-                  type="number"
-                  step={isCop ? '1000' : '0.01'}
-                  min={isCop ? '100' : '0.01'}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
                   required
                   autoFocus
                   placeholder={isCop ? '50000' : '0.00'}
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    if (isCop) {
+                      // COP: solo dígitos enteros
+                      setAmount(val.replace(/[^0-9]/g, ''))
+                    } else {
+                      // Otras monedas: dígitos + punto decimal opcional
+                      if (/^[0-9]*\.?[0-9]*$/.test(val)) setAmount(val)
+                    }
+                  }}
                 />
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useCallback } from 'react'
 import { Check, Layers, PiggyBank, ShieldCheck, Sparkles, Wallet } from 'lucide-react'
 import { CurrencyCode, Language, MonthPlan } from '../../types'
 import { CURRENCIES, formatMoney } from '../../lib/kakeibo'
@@ -37,6 +37,21 @@ export function BudgetView({
   const monthLabel = formatMonthLabel(month, lang)
   const isCop = currency === 'COP'
   const currencySymbol = CURRENCIES[currency]?.symbol || '$'
+
+  // Generic handler: for COP strip non-digits; for others allow decimals
+  const handleNumericChange = useCallback(
+    (field: 'income' | 'fixed' | 'savingsGoal') => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value
+      if (isCop) {
+        const digits = raw.replace(/[^0-9]/g, '')
+        onUpdatePlan({ [field]: digits === '' ? 0 : parseInt(digits, 10) })
+      } else {
+        const num = parseFloat(raw)
+        onUpdatePlan({ [field]: isNaN(num) ? 0 : num })
+      }
+    },
+    [isCop, onUpdatePlan]
+  )
 
   // Allocation Stream breakdown (Income = Fixed + Savings + Spendable)
   const allocationBreakdown = useMemo(() => {
@@ -173,11 +188,11 @@ export function BudgetView({
             <input
               id="income-input"
               aria-label="Monthly income"
-              type="number"
-              min="0"
-              step={isCop ? '1000' : '0.01'}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={plan.income || ''}
-              onChange={(e) => onUpdatePlan({ income: Number(e.target.value) })}
+              onChange={handleNumericChange('income')}
               placeholder={isCop ? '4250000' : '0.00'}
             />
           </div>
@@ -195,11 +210,11 @@ export function BudgetView({
             <input
               id="fixed-input"
               aria-label="Fixed expenses"
-              type="number"
-              min="0"
-              step={isCop ? '1000' : '0.01'}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={plan.fixed || ''}
-              onChange={(e) => onUpdatePlan({ fixed: Number(e.target.value) })}
+              onChange={handleNumericChange('fixed')}
               placeholder={isCop ? '1800000' : '0.00'}
             />
           </div>
@@ -217,11 +232,11 @@ export function BudgetView({
             <input
               id="savings-input"
               aria-label="Savings goal"
-              type="number"
-              min="0"
-              step={isCop ? '1000' : '0.01'}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={plan.savingsGoal || ''}
-              onChange={(e) => onUpdatePlan({ savingsGoal: Number(e.target.value) })}
+              onChange={handleNumericChange('savingsGoal')}
               placeholder={isCop ? '700000' : '0.00'}
             />
           </div>
