@@ -149,7 +149,7 @@ export function ExpensesView({
                 <input
                   name="amount"
                   type="number"
-                  step={isCop ? '1000' : '0.01'}
+                  step={isCop ? '1' : '0.01'}
                   min={isCop ? '100' : '0.01'}
                   required
                   placeholder={isCop ? '50000' : '0.00'}
